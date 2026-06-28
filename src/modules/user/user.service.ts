@@ -42,10 +42,10 @@ const registerUserIntoDB = async (payload: RegisterUserPayload) => {
   });
   return user;
 };
-const getMyProfileFromDB = async (tokenData: { id: string }) => {
+const getMyProfileFromDB = async (id:string) => {
 
   const user = await prisma.user.findUniqueOrThrow({
-     where:{id: tokenData.id},
+     where:{id: id},
      omit:{
         password:true,
      },
@@ -53,9 +53,13 @@ const getMyProfileFromDB = async (tokenData: { id: string }) => {
       profile: true
      }
   })
-  return user;
+   return user;
 };
+const updateProfileIntoDB = async(id: string,payload:any)=>{
+
+}
 export const userServices = {
   registerUserIntoDB,
   getMyProfileFromDB,
+  updateProfileIntoDB
 };

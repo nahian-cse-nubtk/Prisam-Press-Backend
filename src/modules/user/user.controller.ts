@@ -5,6 +5,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { JwtUtils } from "../../utils/jwt";
 import config from "../../config";
+import { JwtPayload } from "jsonwebtoken";
 
 const registerUser = catchAsync(async (req: Request, res: Response) => {
   const user = await userServices.registerUserIntoDB(req.body);
@@ -18,18 +19,24 @@ const registerUser = catchAsync(async (req: Request, res: Response) => {
 });
 const getMyProfile=catchAsync(async(req:Request,res:Response,next:NextFunction)=>{
 
-    const token = req.cookies.accessToken
-    const verifyToken =JwtUtils.verifyJwtToken(token,config.jwt_access_secret as string)
-    const profile = await userServices.getMyProfileFromDB(verifyToken.data as string)
 
-    sendResponse(res,{
+
+    const profile = await userServices.getMyProfileFromDB(req.user.id)
+
+    sendResponse(res, {
       success: true,
       statusCode: status.OK,
       message: "User Profile Fetched",
-      data:{profile}
+      data: { profile },
     })
+})
+const updateProfile = catchAsync(async(req:Request,res:Response,)=>{
+
+  const updateProfile = 
+
 })
 export const userController = {
   registerUser,
-  getMyProfile
+  getMyProfile,
+  updateProfile
 };
