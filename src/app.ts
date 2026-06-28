@@ -2,7 +2,8 @@ import { Application } from "express"
 import express from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser"
-import { userRouter } from "./modules/user.route"
+import { userRouter } from "./modules/user/user.route"
+import { authRouter } from "./modules/auth/auth.route"
 
 //required Middleware
 
@@ -13,8 +14,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
 
 app.use("/api/users",userRouter)
-
-
+app.use("/api/auth",authRouter)
 
 
 
