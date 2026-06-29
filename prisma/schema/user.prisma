@@ -10,7 +10,8 @@ model user{
     updatedAT DateTime @updatedAt
     profile profile?
     post post[]
-    
+    comment comment[]
+
 
     @@map("users")
 

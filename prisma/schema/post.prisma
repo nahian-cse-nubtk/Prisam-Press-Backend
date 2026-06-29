@@ -9,6 +9,10 @@ model post{
     views Int @default(0)
     authorId String
     author user @relation(fields: [authorId],references: [id],onDelete: Cascade)
+    comment comment[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([authorId])
+    @@map("posts")
 }
