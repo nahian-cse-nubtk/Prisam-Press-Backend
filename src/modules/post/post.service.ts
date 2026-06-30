@@ -1,6 +1,6 @@
 import { commentStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
-import { ICreatePostPayload } from "./post.interface";
+import { ICreatePostPayload, IUpdatePost } from "./post.interface";
 
 
 const createPost = async(payload:ICreatePostPayload,userId:string)=>{
@@ -62,10 +62,33 @@ const getPostById = async(postId:string)=>{
     )
     return transectionResult;
 }
+const updatePost = async(postId:string,payload:IUpdatePost,authorId:string)=>{
 
+    const post = await prisma.post.findUniqueOrThrow({
+        where:{id:postId}
+    })
+    if(post.authorId !== authorId){
+
+        throw new Error("You are not the owner of the post")
+    }
+    const result = await prisma.post.update({
+        where:{id: postId},
+        data:payload,
+        include:{
+            author:{
+                omit: {
+                    password: true
+                }
+            },
+            comment: true
+        }
+    })
+    return result;
+}
 
 export const postService ={
     createPost,
     getAllPosts,
-    getPostById
+    getPostById,
+    updatePost
 }

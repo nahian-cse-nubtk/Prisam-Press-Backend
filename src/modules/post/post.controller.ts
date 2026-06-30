@@ -46,7 +46,21 @@ const getPostById = catchAsync(async(req:Request,res:Response,next:NextFunction)
           })
 })
 const updatePost = catchAsync(async(req:Request,res:Response,next:NextFunction)=>{
+        const postId = req.params.postId;
+        const authorId = req.user?.id;
+        const payload = req.body;
 
+        if(!postId){
+         throw new Error("Post id is required")
+        }
+        const result = await postService.updatePost(postId as string,payload,authorId as string)
+
+        sendResponse(res,{
+         success: true,
+         statusCode: status.OK,
+         message: "Post update successful",
+         data: result
+        })
 })
 const deletePost = catchAsync(async(req:Request,res:Response,next:NextFunction)=>{
 
