@@ -97,10 +97,38 @@ const deletePost = async(postId:string,authorId:string)=>{
     })
 
 }
+
+const getMyPost = async(authorId:string)=>{
+
+    const result = await prisma.post.findMany({
+        where:{authorId},
+        orderBy:{
+            createdAt: "desc"
+        },
+        include:{
+            comment: true,
+            author:{
+                omit:{
+                    password: true
+                }
+            },
+            _count:{
+                select:{
+                    comment: true
+                }
+            }
+        },
+
+
+    })
+    return result;
+
+}
 export const postService ={
     createPost,
     getAllPosts,
     getPostById,
     updatePost,
-    deletePost
+    deletePost,
+    getMyPost
 }
