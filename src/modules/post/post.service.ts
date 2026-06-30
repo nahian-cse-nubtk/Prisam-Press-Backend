@@ -1,4 +1,4 @@
-import { commentStatus } from "../../../generated/prisma/enums";
+import { commentStatus, postStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { ICreatePostPayload, IUpdatePost } from "./post.interface";
 
@@ -124,11 +124,73 @@ const getMyPost = async(authorId:string)=>{
     return result;
 
 }
+const getPostsStats=async()=>{
+
+    const transactionResult = await prisma.$transaction(
+        async(tx)=>{
+            const [totalPosts,
+        totalPublishedPosts,
+        totalDraftPosts,
+        totalArchivedPosts,
+        totalComments,
+        totalApprovedComments,
+        totalRejectedComments,
+        totalPostViewsAggregate
+    ] = await Promise.all([
+        await tx.post.count(),
+        await tx.post.count({
+            where:{
+                status: postStatus.PUBLISHED
+            }
+        }),
+        await tx.post.count({
+            where:{
+                status:postStatus.DRAFT
+            }
+        }),
+        await tx.post.count({
+            where:{
+                status: postStatus.ARCHIVED
+            }
+        }),
+        await tx.comment.count(),
+        await tx.comment.count({
+            where:{
+                status:commentStatus.Approved
+            }
+        }),
+        await tx.comment.count({
+            where:{
+                status: commentStatus.Reject
+            }
+        }),
+        await tx.post.aggregate({
+            _sum:{
+                views: true
+            }
+        })
+    ])
+    return{
+        totalPosts,
+        totalPublishedPosts,
+        totalDraftPosts,
+        totalArchivedPosts,
+        totalComments,
+        totalApprovedComments,
+        totalRejectedComments,
+        totalPostViews : totalPostViewsAggregate._sum.views
+    }
+    }
+    )
+    return transactionResult;
+
+}
 export const postService ={
     createPost,
     getAllPosts,
     getPostById,
     updatePost,
     deletePost,
-    getMyPost
+    getMyPost,
+    getPostsStats
 }
